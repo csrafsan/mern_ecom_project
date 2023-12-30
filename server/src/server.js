@@ -1,10 +1,12 @@
 const express = require("express");
 const morgan = require('morgan');
+const bodyParser = require('body-parser');
 const app = express();
 
 app.use(morgan('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true}));
+// for form validation build in middleware of express js
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true}));
 
 const isLoggedIn = (req, res, next) =>{
     console.log("isLoggedIn middleware");
@@ -61,6 +63,18 @@ app.delete('/test', (req, res) => {
 
 app.get('/products', (req, res) => {
     res.send('products are returned!')
+});
+
+// Client Error handaling by error handeler middleware
+app.use((req, res, next) => {
+    res.status(404).json({message: 'route not found'});
+    next();
+});
+
+// Server Error handaling by error handeler middleware
+app.use((req, res, next) => {
+    console.error(err.stack)
+    res.status(500).send('Something broke!')
 });
 
 
